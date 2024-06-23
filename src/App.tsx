@@ -59,7 +59,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           fontWeight: isDeadlineToday ? 'bold' : 'normal',
         }}
       >
-        {todo.text}
+        {todo.text + " "}
       </span>
       {todo.deadline && (
         <>
@@ -153,7 +153,7 @@ function App() {
 
   const handleAddTodo = () => {
     const newTodo = {
-      text: inputValue,
+      text: inputValue + " ",
       isCompleted: false,
       deadline: deadlineInput,
     };
@@ -186,6 +186,19 @@ function App() {
 
   const hasOverdueTasks = overdueCount > 0;
   const hasTodayTasks = todayTaskCount > 0;
+
+  // タスク一覧をエクスポートする機能
+  const exportTodos = () => {
+    const todoTexts = todos.map((todo, index) => `${index + 1}: ${todo.text} - 締切: ${todo.deadline} - 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
+    const blob = new Blob([todoTexts], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'TodoList.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <>
@@ -225,6 +238,7 @@ function App() {
         onChange={(e) => setDuplicateCount(Number(e.target.value))}
       />
       <button onClick={handleAddTodo}>Add Task</button>
+      <button onClick={exportTodos}>Export Task List</button>
       <div className="task-list">
         {sortedTodos.map((todo, index) => (
           <TodoItem
