@@ -184,9 +184,22 @@ function App() {
 
   const sortedTodos = [...todos].sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
 
+  const hasOverdueTasks = overdueCount > 0;
+  const hasTodayTasks = todayTaskCount > 0;
+
   return (
     <>
       <h1>Todo List</h1>
+      {hasOverdueTasks && (
+        <div className="overdue-warning">
+          <p style={{ color: 'red', fontWeight: 'bold' }}>警告！期限切れのタスクがあります！</p>
+        </div>
+      )}
+      {hasTodayTasks && (
+        <div className="today-urgent">
+          <p style={{ color: 'blue', fontWeight: 'bold' }}>今日のタスクがあります！</p>
+        </div>
+      )}
       <div>
         <p>Now: {currentDateTime.toLocaleString()}</p>
         <p>Total Tasks: {taskCount}</p>
