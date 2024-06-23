@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+// Todoアイテムのプロパティ型定義
 type TodoItemProps = {
   todo: { text: string; isCompleted: boolean; deadline: string };
   index: number;
@@ -9,14 +10,14 @@ type TodoItemProps = {
   handleSetDeadline: (index: number, deadline: string) => void;
 };
 
-
-
+// Todo情報の型定義
 type TodoInfo = {
   text: string;
   isCompleted: boolean;
   deadline: string;
 };
 
+// Todoアイテムコンポーネント
 const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   index,
@@ -106,6 +107,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   );
 };
 
+// アプリケーションのメインコンポーネント
 function App() {
   const initialTodos = () => {
     const savedTodos = localStorage.getItem('todos');
@@ -171,7 +173,13 @@ function App() {
   };
 
   const handleSetDeadline = (index: number, deadline: string) => {
-    setTodos(prevTodos => prevTodos.map((todo, todoIndex) => todoIndex === index ? { ...todo, deadline } : todo));
+    const newDeadline = deadline || prompt("締め切り日時が入力されていません。日時を入力してください（例：2023-12-31）");
+    if (!newDeadline) return;
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, todoIndex) =>
+        todoIndex === index ? { ...todo, deadline: newDeadline } : todo
+      )
+    );
   };
 
   const sortedTodos = [...todos].sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
