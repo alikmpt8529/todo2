@@ -195,17 +195,11 @@ function App() {
   const hasTodayTasks = todayTaskCount > 0;
 
   // タスク一覧をエクスポートする機能
-  const exportTodos = (format: string) => {
+  const exportTodos = async (format: string) => {
     const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
-    
-    if (format === 'pdf') {
-      const pdf = new jsPDF();
-      todos.forEach((todo, index) => {
-        pdf.text(`${index + 1}: ${todo.text} - 締切: ${todo.deadline} - 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`, 10, 10 + (index * 10));
-      });
-      pdf.save('TodoList.pdf');
-    } else if (format === 'csv') {
-      const csvContent = "data:text/csv;charset=utf-8," + todos.map((todo, index) => `${index + 1}, ${todo.text}, ${todo.deadline}, ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
+  
+    if (format === 'csv') {
+      const csvContent = "data:text/csv;charset=utf-8," + todoTexts;
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
@@ -213,7 +207,7 @@ function App() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else { // text
+    } else if (format === 'txt') {
       const blob = new Blob([todoTexts], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -222,6 +216,8 @@ function App() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    } else {
+      console.error('Unsupported format');
     }
   };
   return (
