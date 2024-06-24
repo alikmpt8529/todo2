@@ -57,7 +57,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
         className="task-text"
         style={{
           textDecoration: todo.isCompleted ? 'line-through' : 'none',
-          color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' : 'black', // 期限が24時間以内の場合は青色で表示
+          color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' :  'inherit',// 期限が24時間以内の場合は青色で表示
           fontWeight: isDeadlineToday || isDeadlineWithin24Hours ? 'bold' : 'normal', // 期限が今日または24時間以内の場合は太字
         }}
       >
