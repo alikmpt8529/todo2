@@ -195,7 +195,7 @@ function App() {
   const hasTodayTasks = todayTaskCount > 0;
 
   // タスク一覧をエクスポートする機能
-  const exportTodos = async (format: string) => {
+  const exportTodos = async () => {
     const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
      
       const blob = new Blob([todoTexts], { type: 'text/plain' });
@@ -246,7 +246,7 @@ function App() {
         onChange={(e) => setDuplicateCount(Number(e.target.value))}
       />
       <button onClick={handleAddTodo}>Add Task</button>
-      <button onClick={() => exportTodos('pdf')}>Export Task List</button>
+      <button onClick={exportTodos}>Export Task List</button>
       <div className="task-list">
         {sortedTodos.map((todo, index) => (
           <TodoItem
