@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import jsPDF from 'jspdf';
+
 // Todoアイテムのプロパティ型定義
 type TodoItemProps = {
   todo: { text: string; isCompleted: boolean; deadline: string };
