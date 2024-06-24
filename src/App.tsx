@@ -197,17 +197,7 @@ function App() {
   // タスク一覧をエクスポートする機能
   const exportTodos = async (format: string) => {
     const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
-  
-    if (format === 'csv') {
-      const csvContent = "data:text/csv;charset=utf-8," + todoTexts;
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'TodoList.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (format === 'txt') {
+     
       const blob = new Blob([todoTexts], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -216,9 +206,7 @@ function App() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      console.error('Unsupported format');
-    }
+    
   };
   return (
     <>
