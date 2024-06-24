@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-
+import jsPDF from 'jspdf';
 // Todoアイテムのプロパティ型定義
 type TodoItemProps = {
   todo: { text: string; isCompleted: boolean; deadline: string };
@@ -195,18 +195,35 @@ function App() {
   const hasTodayTasks = todayTaskCount > 0;
 
   // タスク一覧をエクスポートする機能
-  const exportTodos = () => {
-    const todoTexts = todos.map((todo, index) => `${index + 1}: ${todo.text} - 締切: ${todo.deadline} - 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
-    const blob = new Blob([todoTexts], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'TodoList.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportTodos = (format: string) => {
+    const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
+    
+    if (format === 'pdf') {
+      const pdf = new jsPDF();
+      todos.forEach((todo, index) => {
+        pdf.text(`${index + 1}: ${todo.text} - 締切: ${todo.deadline} - 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`, 10, 10 + (index * 10));
+      });
+      pdf.save('TodoList.pdf');
+    } else if (format === 'csv') {
+      const csvContent = "data:text/csv;charset=utf-8," + todos.map((todo, index) => `${index + 1}, ${todo.text}, ${todo.deadline}, ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'TodoList.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else { // text
+      const blob = new Blob([todoTexts], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'TodoList.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
-
   return (
     <>
       <h1>Todo List</h1>
@@ -245,7 +262,7 @@ function App() {
         onChange={(e) => setDuplicateCount(Number(e.target.value))}
       />
       <button onClick={handleAddTodo}>Add Task</button>
-      <button onClick={exportTodos}>Export Task List</button>
+      <button onClick={() => exportTodos('pdf')}>Export Task List</button>
       <div className="task-list">
         {sortedTodos.map((todo, index) => (
           <TodoItem
