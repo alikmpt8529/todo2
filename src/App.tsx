@@ -39,6 +39,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   const isDeadlineExpired = new Date(todo.deadline) < new Date();
   const isDeadlineToday = new Date(todo.deadline).toDateString() === new Date().toDateString();
+  // 期限が現在から24時間以内かどうかを判断
+  const isDeadlineWithin24Hours = new Date(todo.deadline).getTime() - new Date().getTime() <= 86400000 && new Date(todo.deadline) > new Date();
 
   const handleDeleteClick = () => {
     handleDeleteTodo(index);
@@ -55,8 +57,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
         className="task-text"
         style={{
           textDecoration: todo.isCompleted ? 'line-through' : 'none',
-          color: isDeadlineExpired ? 'red' : isDeadlineToday ? 'blue' : 'black',
-          fontWeight: isDeadlineToday ? 'bold' : 'normal',
+          color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' : 'black', // 期限が24時間以内の場合は青色で表示
+          fontWeight: isDeadlineToday || isDeadlineWithin24Hours ? 'bold' : 'normal', // 期限が今日または24時間以内の場合は太字
         }}
       >
         {todo.text + " "}
@@ -76,7 +78,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
               style={{
                 cursor: 'pointer',
                 textDecoration: 'underline',
-                color: isDeadlineExpired ? 'red' : 'inherit',
+                color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' : 'inherit', // 期限が24時間以内の場合は青色で表示
               }}
               onClick={() => setEditDeadlineMode(true)}
             >
@@ -101,6 +103,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
       {isDeadlineToday && !isDeadlineExpired && (
         <span className="urgent-msg" style={{ color: 'blue' }}>
           急げ！
+        </span>
+      )}
+      {isDeadlineWithin24Hours && !isDeadlineExpired && !isDeadlineToday && (
+        <span className="urgent-msg" style={{ color: 'blue' }}>
+          24時間以内！
         </span>
       )}
     </div>
