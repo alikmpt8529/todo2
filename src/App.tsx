@@ -204,8 +204,19 @@ function App() {
   // タスク一覧をエクスポートする機能
   const exportTodos = async () => {
     const todoTexts = todos.map((todo, index) => {
-      // ISO形式の日付からTをスペースに置換し、末尾の000Zを除外
-      const formattedDeadline = todo.deadline.replace('T', ' ').substring(0, todo.deadline.length - 5);
+      // 日本標準時に変換
+      const jstDate = new Date(todo.deadline);
+      // Intl.DateTimeFormatを使用して日本標準時でフォーマット
+      const formatter = new Intl.DateTimeFormat('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Tokyo'
+      });
+      const formattedDeadline = formatter.format(jstDate);
+  
       return `${index + 1}, ${todo.text}, 締切: ${formattedDeadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`;
     }).join('\n');
   
