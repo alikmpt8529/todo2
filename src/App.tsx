@@ -262,9 +262,10 @@ function App() {
       />
       <input
         type="number"
-        placeholder="Duplicate Count"
+        placeholder="繰り返し回数"
         onChange={(e) => setDuplicateCount(Number(e.target.value))}
       />
+      <label htmlFor="repeatInterval">繰り返し間隔（日）</label>
       <input
         type="number"
         value={repeatInterval}
