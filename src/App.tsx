@@ -57,7 +57,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
         className="task-text"
         style={{
           textDecoration: todo.isCompleted ? 'line-through' : 'none',
-          color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' :  'inherit',// 期限が24時間以内の場合は青色で表示
+          color: isDeadlineExpired ? 'red' : isDeadlineWithin24Hours ? 'blue' : 'inherit',// 期限が24時間以内の場合は青色で表示
           fontWeight: isDeadlineToday || isDeadlineWithin24Hours ? 'bold' : 'normal', // 期限が今日または24時間以内の場合は太字
         }}
       >
@@ -131,7 +131,7 @@ function App() {
   const [todayTaskCount, setTodayTaskCount] = useState(0);
   const [todayTaskPercentage, setTodayTaskPercentage] = useState<number>(0);
   const [duplicateCount, setDuplicateCount] = useState<number>(1);
-
+  const [repeatInterval, setRepeatInterval] = useState(1); // デフォルトは1日
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
     const taskCount = todos.length;
@@ -159,18 +159,25 @@ function App() {
   };
 
   const handleAddTodo = () => {
-    const newTodo = {
-      text: inputValue + " ",
-      isCompleted: false,
-      deadline: deadlineInput,
-    };
-    const duplicatedTodos = Array(duplicateCount).fill(newTodo);
-
+    let duplicatedTodos = [];
+  
+    for (let i = 0; i < duplicateCount; i++) {
+      const deadlineDate = new Date(deadlineInput);
+      deadlineDate.setDate(deadlineDate.getDate() + (repeatInterval * i)); // 繰り返し間隔を考慮
+  
+      // 時間情報を含めるように変更
+      const newTodo = {
+        text: inputValue + " ",
+        isCompleted: false,
+        deadline: deadlineDate.toISOString(), // YYYY-MM-DDTHH:MM:SS.sssZ形式
+      };
+  
+      duplicatedTodos.push(newTodo);
+    }
+  
     setTodos(prevTodos => [...duplicatedTodos, ...prevTodos]);
     setInputValue('');
-    setDeadlineInput('');
   };
-
   const handleDeleteTodo = (index: number) => {
     setTodos(prevTodos => prevTodos.filter((_, todoIndex) => todoIndex !== index));
   };
@@ -197,16 +204,16 @@ function App() {
   // タスク一覧をエクスポートする機能
   const exportTodos = async () => {
     const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
-     
-      const blob = new Blob([todoTexts], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'TodoList.txt';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    
+
+    const blob = new Blob([todoTexts], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'TodoList.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
   };
   return (
     <>
@@ -228,7 +235,7 @@ function App() {
         <p>Today's Tasks: {todayTaskCount} ({todayTaskPercentage.toFixed(2)}%)</p>
         {taskCount === 0 && <p>No tasks to do!</p>}
       </div>
-      
+
       <input
         type="text"
         value={inputValue}
@@ -242,8 +249,13 @@ function App() {
       <input
         type="number"
         placeholder="Duplicate Count"
-        value={duplicateCount}
         onChange={(e) => setDuplicateCount(Number(e.target.value))}
+      />
+      <input
+        type="number"
+        value={repeatInterval}
+        onChange={(e) => setRepeatInterval(Number(e.target.value))}
+        placeholder="繰り返し間隔（日）"
       />
       <button onClick={handleAddTodo}>Add Task</button>
       <button onClick={exportTodos}>Export Task List</button>

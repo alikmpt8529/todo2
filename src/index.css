@@ -70,7 +70,7 @@ button:focus-visible {
   body {
     /* ダークモード時のフォントカラーと背景色 */
     color: #ffffff; /* テキスト色を白に設定 */
-    background-color: #000000;
+    background-color: #302d2d;
   }
   
   a:hover {
