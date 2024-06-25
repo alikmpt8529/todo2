@@ -203,8 +203,12 @@ function App() {
 
   // タスク一覧をエクスポートする機能
   const exportTodos = async () => {
-    const todoTexts = todos.map((todo, index) => `${index + 1}, ${todo.text}, 締切: ${todo.deadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`).join('\n');
-
+    const todoTexts = todos.map((todo, index) => {
+      // ISO形式の日付からTをスペースに置換し、末尾の000Zを除外
+      const formattedDeadline = todo.deadline.replace('T', ' ').substring(0, todo.deadline.length - 5);
+      return `${index + 1}, ${todo.text}, 締切: ${formattedDeadline}, 完了: ${todo.isCompleted ? 'はい' : 'いいえ'}`;
+    }).join('\n');
+  
     const blob = new Blob([todoTexts], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -213,7 +217,6 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
   };
   return (
     <>
